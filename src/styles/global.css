@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface text-ink;
+  }
+}
+
+@layer components {
+  .prose {
+    @apply text-ink;
+  }
+  .prose h1, .prose h2, .prose h3 {
+    @apply text-ink font-semibold;
+  }
+  .prose table {
+    @apply text-sm;
+  }
+  .prose th {
+    @apply bg-surface-subtle;
+  }
+  .prose code {
+    @apply bg-surface-subtle text-accent px-1 rounded;
+  }
+  .prose blockquote {
+    @apply border-l-accent text-ink-muted;
+  }
+}
