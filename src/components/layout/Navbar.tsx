@@ -1,6 +1,22 @@
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { Button } from '../ui/Button'
+import { Moon, Sun } from 'lucide-react'
+
+function useDarkMode() {
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    try { localStorage.setItem('pill-dark-mode', String(dark)) } catch { /* noop */ }
+  }, [dark])
+  const toggle = useCallback(() => setDark((d) => !d), [])
+  return { dark, toggle }
+}
 
 const NAV_LINKS = [
   { to: '/', label: 'ค้นหายา' },
@@ -11,6 +27,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const { user, role, signIn, signOut, loading } = useAuth()
+  const { dark, toggle: toggleDark } = useDarkMode()
   const location = useLocation()
 
   return (
@@ -50,6 +67,13 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={toggleDark}
+            className="p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-surface-subtle transition-colors"
+            title={dark ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด'}
+          >
+            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
           {loading ? (
             <div className="w-8 h-8 rounded-full bg-surface-border animate-pulse" />
           ) : user ? (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PageShell } from '../components/layout/PageShell'
 import { QuestionCard } from '../components/quiz/QuestionCard'
 import { ClassFilterSelector } from '../components/drug/ClassFilterSelector'
@@ -6,12 +6,14 @@ import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { useQuiz } from '../hooks/useQuiz'
+import { useSRS } from '../hooks/useSRS'
 import { getDrugClasses } from '../services/db.service'
 
 interface DrugClass { id: string; name: string }
 
 export function QuizPage() {
   const quiz = useQuiz()
+  const { getDueClasses, getWeightedClassIds } = useSRS()
   const [classes, setClasses] = useState<DrugClass[]>([])
   const [selectedClass, setSelectedClass] = useState<string | undefined>()
 
@@ -19,10 +21,59 @@ export function QuizPage() {
     getDrugClasses().then(setClasses).catch(() => {})
   }, [])
 
+  const dueClassIds = useMemo(() => getDueClasses(), [getDueClasses, quiz.phase])
+  const dueClassNames = useMemo(
+    () => dueClassIds.map((id) => classes.find((c) => c.id === id)?.name).filter(Boolean) as string[],
+    [dueClassIds, classes]
+  )
+  const weightedIds = useMemo(
+    () => classes.length > 0 ? getWeightedClassIds(classes.map((c) => c.id)) : [],
+    [getWeightedClassIds, classes]
+  )
+
   if (quiz.phase === 'idle') {
     return (
       <PageShell title="ทำข้อสอบ" subtitle="เลือกกลุ่มยาและเริ่มทำข้อสอบ" maxWidth="md">
         <div className="flex flex-col gap-6">
+          {dueClassNames.length > 0 && (
+            <Card className="border-accent/30 bg-accent-light/20">
+              <h2 className="text-sm font-medium text-accent mb-2">ถึงเวลาทบทวน</h2>
+              <div className="flex flex-wrap gap-1.5">
+                {dueClassNames.map((name) => (
+                  <button
+                    key={name}
+                    onClick={() => setSelectedClass(classes.find((c) => c.name === name)?.id)}
+                    className="px-2.5 py-1 rounded-lg bg-accent/10 text-xs font-medium text-accent hover:bg-accent/20 transition-colors"
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-ink-muted mt-2">ระบบแนะนำให้ทบทวนกลุ่มยาเหล่านี้เพื่อการจดจำระยะยาว</p>
+            </Card>
+          )}
+
+          {weightedIds.length > 0 && dueClassNames.length === 0 && (
+            <Card>
+              <h2 className="text-sm font-medium text-ink mb-2">กลุ่มที่ควรเน้น</h2>
+              <div className="flex flex-wrap gap-1.5">
+                {weightedIds.slice(0, 5).map((id) => {
+                  const cls = classes.find((c) => c.id === id)
+                  return cls ? (
+                    <button
+                      key={id}
+                      onClick={() => setSelectedClass(id)}
+                      className="px-2.5 py-1 rounded-lg bg-warning-light text-xs font-medium text-warning hover:bg-warning-light/70 transition-colors"
+                    >
+                      {cls.name}
+                    </button>
+                  ) : null
+                })}
+              </div>
+              <p className="text-xs text-ink-muted mt-2">กลุ่มที่คุณตอบผิดบ่อย — แนะนำให้ฝึกเพิ่ม</p>
+            </Card>
+          )}
+
           {classes.length > 0 && (
             <Card>
               <h2 className="text-sm font-medium text-ink mb-3">กรองตามกลุ่มยา</h2>

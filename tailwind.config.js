@@ -1,35 +1,36 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
         surface: {
-          DEFAULT: '#FAFAF9',
-          subtle: '#F5F4F2',
-          border: '#E8E5E0',
+          DEFAULT: 'var(--color-surface)',
+          subtle: 'var(--color-surface-subtle)',
+          border: 'var(--color-surface-border)',
         },
         ink: {
-          DEFAULT: '#1C1917',
-          muted: '#78716C',
-          faint: '#A8A29E',
+          DEFAULT: 'var(--color-ink)',
+          muted: 'var(--color-ink-muted)',
+          faint: 'var(--color-ink-faint)',
         },
         accent: {
-          DEFAULT: '#0F766E',
-          hover: '#0D6660',
-          light: '#CCFBF1',
+          DEFAULT: 'var(--color-accent)',
+          hover: 'var(--color-accent-hover)',
+          light: 'var(--color-accent-light)',
         },
         warning: {
-          DEFAULT: '#B45309',
-          light: '#FEF3C7',
+          DEFAULT: 'var(--color-warning)',
+          light: 'var(--color-warning-light)',
         },
         danger: {
-          DEFAULT: '#B91C1C',
-          light: '#FEE2E2',
+          DEFAULT: 'var(--color-danger)',
+          light: 'var(--color-danger-light)',
         },
         success: {
-          DEFAULT: '#15803D',
-          light: '#DCFCE7',
+          DEFAULT: 'var(--color-success)',
+          light: 'var(--color-success-light)',
         },
       },
       fontFamily: {

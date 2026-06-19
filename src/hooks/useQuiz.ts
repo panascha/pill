@@ -41,6 +41,13 @@ type Action =
 
 const SECONDS_PER_QUESTION = 30
 
+/** Sort others: same-class drugs first (Smart Distractor), then rest shuffled */
+function priorityOthers(drug: QuizDrug, others: QuizDrug[]): QuizDrug[] {
+  const sameClass = others.filter((o) => drug.drug_classes?.id && o.drug_classes?.id === drug.drug_classes.id)
+  const diffClass = others.filter((o) => o.drug_classes?.id !== drug.drug_classes?.id)
+  return [...shuffle(sameClass), ...shuffle(diffClass)]
+}
+
 function buildQuestions(drugs: QuizDrug[]): QuizQuestion[] {
   if (drugs.length < 4) return []
   const questions: QuizQuestion[] = []
@@ -62,7 +69,7 @@ function buildQuestion(drug: QuizDrug, others: QuizDrug[], type: QuestionType): 
     case 'mechanism': {
       const correct = truncateMd(drug.mechanism_md)
       if (!correct) return null
-      const distractors = shuffle(others.map((d) => truncateMd(d.mechanism_md)).filter(Boolean)).slice(0, 3)
+      const distractors = priorityOthers(drug, others).map((d) => truncateMd(d.mechanism_md)).filter(Boolean).slice(0, 3)
       if (distractors.length < 3) return null
       return { ...base, type, question: `ยา ${drug.name} ออกฤทธิ์อย่างไร?`, correct, options: shuffle([correct, ...distractors]) }
     }
@@ -79,15 +86,17 @@ function buildQuestion(drug: QuizDrug, others: QuizDrug[], type: QuestionType): 
       if (!top) return null
       const correct = top.side_effects.name
       const ownIds = new Set(drug.drug_side_effects.map((e) => e.side_effects.id))
-      const distractors = shuffle(
-        others.flatMap((d) => d.drug_side_effects).filter((e) => !ownIds.has(e.side_effects.id)).map((e) => e.side_effects.name)
-      ).slice(0, 3)
+      const distractors = priorityOthers(drug, others)
+        .flatMap((d) => d.drug_side_effects)
+        .filter((e) => !ownIds.has(e.side_effects.id))
+        .map((e) => e.side_effects.name)
+        .slice(0, 3)
       if (distractors.length < 3) return null
       return { ...base, type, question: `ยา ${drug.name} มีผลข้างเคียงใดพบบ่อยที่สุด?`, correct, options: shuffle([correct, ...distractors]) }
     }
     case 'indication': {
       const correct = drug.name
-      const distractors = shuffle(others.map((d) => d.name)).slice(0, 3)
+      const distractors = priorityOthers(drug, others).map((d) => d.name).slice(0, 3)
       const keyword = drug.indications_md.split('\n').find((l) => l.trim().startsWith('-'))?.replace(/^-\s*/, '') ?? drug.indications_md.slice(0, 40)
       if (!keyword) return null
       return { ...base, type, question: `ยาใดใช้รักษา "${keyword}"?`, correct, options: shuffle([correct, ...distractors]) }
@@ -99,7 +108,7 @@ function buildQuestion(drug: QuizDrug, others: QuizDrug[], type: QuestionType): 
       const interactingDrug = others.find((d) => d.id === interactingId)
       if (!interactingDrug) return null
       const correct = interactingDrug.name
-      const distractors = shuffle(others.filter((d) => d.id !== interactingId).map((d) => d.name)).slice(0, 3)
+      const distractors = priorityOthers(drug, others.filter((d) => d.id !== interactingId)).map((d) => d.name).slice(0, 3)
       if (distractors.length < 3) return null
       return { ...base, type, question: `ยา ${drug.name} มีอันตรกิริยารุนแรงกับยาใด?`, correct, options: shuffle([correct, ...distractors]) }
     }

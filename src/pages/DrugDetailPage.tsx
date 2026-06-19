@@ -42,6 +42,12 @@ export function DrugDetailPage() {
               ชื่อการค้า: <MarkdownBlock content={drug.brand_names_md} className="inline" />
             </p>
           )}
+
+          {drug.drug_classes?.description_md && (
+            <div className="mt-3 pt-3 border-t border-surface-border">
+              <MarkdownBlock content={drug.drug_classes.description_md} className="text-sm text-ink-muted" />
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
@@ -91,7 +97,9 @@ export function DrugDetailPage() {
                 <div key={i} className="py-3 flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-medium text-ink">{se.name}</p>
-                    {se.notes_md && <p className="text-xs text-ink-muted mt-0.5">{se.notes_md}</p>}
+                    {se.notes_md && <MarkdownBlock content={se.notes_md} className="text-xs text-ink-muted mt-0.5" />}
+                    {se.mechanism_md && <MarkdownBlock content={se.mechanism_md} className="text-xs text-ink-muted mt-1" />}
+                    {se.management_md && <MarkdownBlock content={se.management_md} className="text-xs text-ink-muted mt-1" />}
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
                     {se.severity && <Badge label={se.severity} type="severity" />}
@@ -103,6 +111,13 @@ export function DrugDetailPage() {
           </Card>
         )}
 
+        {drug.drug_interactions_md && (
+          <Card>
+            <h2 className="font-semibold text-sm text-ink mb-3">สรุปอันตรกิริยาระหว่างยา</h2>
+            <MarkdownBlock content={drug.drug_interactions_md} />
+          </Card>
+        )}
+
         {drug.interactions.length > 0 && (
           <Card>
             <h2 className="font-semibold text-sm text-ink mb-4">อันตรกิริยาระหว่างยา</h2>
@@ -111,7 +126,7 @@ export function DrugDetailPage() {
                 <div key={i} className="py-3 flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-medium text-ink">{inter.drug_name}</p>
-                    {inter.mechanism_md && <p className="text-xs text-ink-muted mt-0.5">{inter.mechanism_md}</p>}
+                    {inter.mechanism_md && <MarkdownBlock content={inter.mechanism_md} className="text-xs text-ink-muted mt-0.5" />}
                   </div>
                   <Badge label={inter.severity} type="interaction" />
                 </div>

@@ -2,6 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-surface: #FAFAF9;
+  --color-surface-subtle: #F5F4F2;
+  --color-surface-border: #E8E5E0;
+  --color-ink: #1C1917;
+  --color-ink-muted: #78716C;
+  --color-ink-faint: #A8A29E;
+  --color-accent: #0F766E;
+  --color-accent-hover: #0D6660;
+  --color-accent-light: #CCFBF1;
+  --color-warning: #B45309;
+  --color-warning-light: #FEF3C7;
+  --color-danger: #B91C1C;
+  --color-danger-light: #FEE2E2;
+  --color-success: #15803D;
+  --color-success-light: #DCFCE7;
+}
+
+.dark {
+  --color-surface: #1C1917;
+  --color-surface-subtle: #292524;
+  --color-surface-border: #44403C;
+  --color-ink: #FAFAF9;
+  --color-ink-muted: #A8A29E;
+  --color-ink-faint: #78716C;
+  --color-accent: #5EEAD4;
+  --color-accent-hover: #2DD4BF;
+  --color-accent-light: #134E4A;
+  --color-warning: #FBBF24;
+  --color-warning-light: #78350F;
+  --color-danger: #FCA5A5;
+  --color-danger-light: #7F1D1D;
+  --color-success: #86EFAC;
+  --color-success-light: #14532D;
+}
+
 @layer base {
   body {
     @apply bg-surface text-ink;
