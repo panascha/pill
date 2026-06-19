@@ -17,8 +17,8 @@ export function Navbar() {
     <header className="sticky top-0 z-40 bg-surface border-b border-surface-border">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2 font-semibold text-ink shrink-0">
-          <span className="text-accent text-lg">Rx</span>
-          <span className="hidden sm:inline text-sm">PharmQuiz</span>
+          <span className="text-accent text-lg font-bold tracking-tight">P.I.L.L.</span>
+          <span className="hidden sm:inline text-xs text-ink-muted">Pharmacology Interactive Learning Library</span>
         </Link>
 
         <nav className="flex items-center gap-1">
